@@ -5,6 +5,8 @@
     packer build -var "ssh_public_key=$(cat <path-to-key>)" amazon-linux-docker.pkr.hcl
     Eg. packer build -var "ssh_public_key=$(cat ~/.ssh/key1.pub)" amazon-linux-docker.pkr.hcl
     We should see an output like this:
-    PFA
-3. 
-
+    ![Screenshot Description](screenshots/packer.png)
+3. Generate the aws resources using terraform. Replace <key-name> using the correct key-pair name in your aws
+    terraform apply -var="key_name=<key-name>" -auto-approve
+    Eg. terraform apply -var="key_name=key1" -auto-approve
+    ![Screenshot Description](screenshots/terraform.png)
