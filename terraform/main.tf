@@ -9,20 +9,35 @@ module "vpc" {
   private_subnet = ["10.0.2.0/24"]
 }
 
-module "bastion" {
+module "ubuntu-ansible-bastion" {
   source         = "./modules/ec2"
+  ami_name_pattern  = "custom-ubuntu-ansible-*"
   instance_count = 1
   subnet_id      = module.vpc.public_subnet_ids[0]
   instance_type  = "t2.micro"
   key_name       = var.key_name
   security_groups = [module.vpc.bastion_sg_id]
+  os_name           = "ubuntu"
 }
 
-module "private_ec2" {
+module "amazon_linux" {
   source         = "./modules/ec2"
-  instance_count = 6
+  ami_name_pattern  = "custom-amazon-linux-docker-*"
+  instance_count = 3
   subnet_id      = module.vpc.private_subnet_ids[0]
   instance_type  = "t2.micro"
   key_name       = var.key_name
   security_groups = [module.vpc.private_sg_id]
+  os_name           = "amazon"
+}
+
+module "ubuntu" {
+  source         = "./modules/ec2"
+  ami_name_pattern  = "custom-ubuntu-docker-*"
+  instance_count = 3
+  subnet_id      = module.vpc.private_subnet_ids[0]
+  instance_type  = "t2.micro"
+  key_name       = var.key_name
+  security_groups = [module.vpc.private_sg_id]
+  os_name           = "ubuntu"
 }

@@ -22,3 +22,13 @@ variable "security_groups" {
   description = "List of security groups for the EC2 instances"
   type        = list(string)
 }
+
+variable "ami_name_pattern" {
+  description = "The pattern for the latest AMI"
+  type        = string
+}
+
+variable "os_name" {
+  description = "Operating system name for tagging"
+  type        = string
+}
