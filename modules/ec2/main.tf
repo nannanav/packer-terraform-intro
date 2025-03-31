@@ -4,7 +4,7 @@ data "aws_ami" "latest_packer" {
 
   filter {
     name   = "name"
-    values = ["custom-amazon-linux-docker-*"]
+    values = ["node-*"]
   }
 }
 
@@ -15,4 +15,8 @@ resource "aws_instance" "server" {
   subnet_id              = var.subnet_id
   key_name               = var.key_name
   vpc_security_group_ids = var.security_groups
+
+  tags = {
+    Name = "node-${count.index + 1}"  # Creates unique names like node-1, node-2, etc.
+  }
 }

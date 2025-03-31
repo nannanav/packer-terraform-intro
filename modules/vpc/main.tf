@@ -105,4 +105,43 @@ resource "aws_security_group" "private_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # Docker Swarm cluster management communications
+  ingress {
+    from_port   = 2377
+    to_port     = 2377
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Optionally restrict to specific IPs or subnets
+  }
+
+  # Docker Swarm communication among nodes
+  ingress {
+    from_port   = 7946
+    to_port     = 7946
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Optionally restrict to specific IPs or subnets
+  }
+
+  ingress {
+    from_port   = 7946
+    to_port     = 7946
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]  # Optionally restrict to specific IPs or subnets
+  }
+
+  # Docker Swarm overlay network traffic
+  ingress {
+    from_port   = 4789
+    to_port     = 4789
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Optionally restrict to specific IPs or subnets
+  }
+
+  ingress {
+    from_port   = 4789
+    to_port     = 4789
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]  # Optionally restrict to specific IPs or subnets
+  }
+
 }

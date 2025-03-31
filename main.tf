@@ -20,7 +20,7 @@ module "bastion" {
 
 module "private_ec2" {
   source         = "./modules/ec2"
-  instance_count = 6
+  instance_count = 5
   subnet_id      = module.vpc.private_subnet_ids[0]
   instance_type  = "t2.micro"
   key_name       = var.key_name
