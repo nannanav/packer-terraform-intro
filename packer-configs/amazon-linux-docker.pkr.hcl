@@ -1,22 +1,4 @@
-packer {
-  required_plugins {
-    amazon = {
-      source  = "github.com/hashicorp/amazon"
-      version = ">= 1.0.0"
-    }
-  }
-}
-
-variable "aws_region" {
-  default = "us-east-1"
-}
-
-variable "ssh_public_key" {
-  description = "Path to the SSH public key"
-  type        = string
-}
-
-source "amazon-ebs" "amazon_linux" {
+source "amazon-ebs" "amazon-linux-docker" {
   ami_name      = "custom-amazon-linux-docker-{{timestamp}}"
   instance_type = "t2.micro"
   region        = var.aws_region
@@ -33,7 +15,7 @@ source "amazon-ebs" "amazon_linux" {
 }
 
 build {
-  sources = ["source.amazon-ebs.amazon_linux"]
+  sources = ["source.amazon-ebs.amazon-linux-docker"]
 
   provisioner "shell" {
     inline = [
@@ -42,10 +24,6 @@ build {
       "sudo systemctl enable docker",
       "sudo systemctl start docker",
       "sudo usermod -aG docker ec2-user",
-      "mkdir -p /home/ec2-user/.ssh",
-      "echo '${var.ssh_public_key}' >> /home/ec2-user/.ssh/authorized_keys",
-      "chown -R ec2-user:ec2-user /home/ec2-user/.ssh",
-      "chmod 600 /home/ec2-user/.ssh/authorized_keys"
     ]
   }
 }
