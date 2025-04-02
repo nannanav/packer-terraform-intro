@@ -1,4 +1,4 @@
-# Packer + Terraform Intro
+# Multi OS + Packer + Terraform Intro + Ansible
 
 1. Create a key-pair in aws, say key1. Download the key-pair.
 
@@ -20,8 +20,10 @@
 3. SSH into servers
 
     ```bash
+    # from local to bastion
     ssh -i ~/.ssh/key1.pem ubuntu@<bastion-ip>
 
+    # from bastion to other ec2
     ssh -i ~/.ssh/bastion_key.pem <user>@<ec2-ip>
     ```
 
