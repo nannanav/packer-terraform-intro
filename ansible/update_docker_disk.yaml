@@ -1,0 +1,40 @@
+---
+- name: Manage EC2 Instances
+  hosts: ec2_instances
+  become: true
+  gather_facts: true  # This helps detect OS type
+  tasks:
+
+    - name: Set ansible_user based on OS type
+      set_fact:
+        ansible_user: "{{ ansible_facts['distribution'] | lower == 'ubuntu' and 'ubuntu' or 'ec2-user' }}"
+
+    - name: Update and Upgrade Packages (Ubuntu)
+      apt:
+        update_cache: yes
+        upgrade: dist
+      when: ansible_os_family == "Debian"
+
+    - name: Update and Upgrade Packages (Amazon Linux)
+      yum:
+        name: "*"
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+    - name: Check Docker Version
+      command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Print Docker Version
+      debug:
+        msg: "Docker version: {{ docker_version.stdout }}"
+
+    - name: Check Disk Usage
+      command: df -h /
+      register: disk_usage
+      changed_when: false
+
+    - name: Print Disk Usage
+      debug:
+        msg: "{{ disk_usage.stdout_lines }}"
