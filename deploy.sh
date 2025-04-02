@@ -32,20 +32,18 @@ if [[ ! -f "$KEY1_PATH" ]]; then
 fi
 
 
-# # Step 2: Initialize and Build the Packer Image
-# echo "Initializing Packer..."
-# packer init packer-configs
+# Step 1: Initialize and Build the Packer Image
+echo "Initializing Packer..."
+packer init packer-configs
 
-# echo "Building Image with Packer..."
-# packer build packer-configs
+echo "Building Image with Packer..."
+packer build packer-configs
 
 cd terraform
 
 
-# Step 1: Generate the public key from the private key
-# PUBLIC_KEY_PATH="${KEY1_PATH}.pub"
+# Step 2: Generate the public key from the private key
 PUBLIC_KEY_PATH="./$(basename ${KEY1_PATH}).pub"
-# PUBLIC_KEY_NAME="$(basename ${KEY1_PATH}).pub"
 if [[ ! -f "$PUBLIC_KEY_PATH" ]]; then
   echo "Generating public key from private key..."
   ssh-keygen -y -f "$KEY1_PATH" > "$PUBLIC_KEY_PATH"
@@ -75,8 +73,6 @@ echo "[bastion]" > ../ansible/inventory.ini
 echo "bastion ansible_host=${BASTION_IP} ansible_user=ubuntu ansible_ssh_private_key_file=${KEY1_PATH}" >> ../ansible/inventory.ini
 
 echo "[ec2_instances]" >> ../ansible/inventory.ini
-# terraform output -json ec2_private_ips | jq -r '.[] | "ec2-\(.) ansible_host=\(.) ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/bastion_key.pem ansible_ssh_common_args=\"-o ProxyCommand=ssh -i '"${KEY1_PATH}"' -W %h:%p ubuntu@'"${BASTION_IP}"'\"" ' >> ../ansible/inventory.ini
-# terraform output -json ec2_private_ips | jq -r '.[] | "ec2-\(.) ansible_host=\(.) ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/bastion_key.pem ansible_ssh_common_args=\"-o ProxyCommand=ssh -i  ~/.ssh/bastion_key.pem -W %h ubuntu@'"${BASTION_IP}"'\"" ' >> ../ansible/inventory.ini
 terraform output -json ubuntu_private_ips | jq -r '.[] | "ec2-\(.) ansible_host=\(.) ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/bastion_key.pem"' >> ../ansible/inventory.ini
 terraform output -json al_private_ips | jq -r '.[] | "ec2-\(.) ansible_host=\(.) ansible_user=ec2-user ansible_ssh_private_key_file=~/.ssh/bastion_key.pem"' >> ../ansible/inventory.ini
 
@@ -87,5 +83,4 @@ echo "Copying Ansible files to Bastion..."
 scp -i "${KEY1_PATH}" -o StrictHostKeyChecking=no -r ansible ubuntu@"${BASTION_IP}":~
 
 echo "Running Ansible Playbook from Bastion..."
-ssh -i "${KEY1_PATH}" -o StrictHostKeyChecking=no ubuntu@"${BASTION_IP}" "cd ~/ansible && ansible-playbook -i inventory.ini update_docker_disk.yaml -vvv"
-# ssh -i "${KEY1_PATH}" -o StrictHostKeyChecking=no ubuntu@13.218.160.24 "cd ~/ansible && ansible-playbook -i inventory.ini update_docker_disk.yaml -vvv"
+ssh -i "${KEY1_PATH}" -o StrictHostKeyChecking=no ubuntu@"${BASTION_IP}" "cd ~/ansible && ansible-playbook -i inventory.ini update_docker_disk.yaml"
