@@ -63,8 +63,12 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private.id
 }
 
+# data "http" "my_ip" {
+#   url = "https://ifconfig.me/ip"
+# }
+
 data "http" "my_ip" {
-  url = "https://ifconfig.me/ip"
+  url = "https://checkip.amazonaws.com"
 }
 
 locals {

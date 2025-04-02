@@ -3,6 +3,6 @@ output "instance_ids" {
   value       = aws_instance.server[*].id
 }
 
-output "bastion_public_key" {
-  value = aws_key_pair.bastion_key.public_key
+output "instance_private_ips" {
+  value = aws_instance.server[*].private_ip
 }

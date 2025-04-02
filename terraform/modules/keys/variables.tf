@@ -1,4 +1,4 @@
 variable "key_path" {
-  description = "The SSH key pair name"
+  description = "SSH key pair path"
   type        = string
 }
